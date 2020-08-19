@@ -92,12 +92,12 @@ locals {
     },
   ]
 
-  tags = merge(
-    {
-      "Name" = var.name
-    },
-    var.tags,
-  )
+#  tags = merge(
+#    {
+#      "Name" = var.name
+#    },
+#    var.tags,
+#  )
 }
 
 data "aws_region" "current" {}
@@ -123,7 +123,7 @@ resource "aws_ssm_parameter" "webhook" {
   type  = "SecureString"
   value = random_id.webhook.hex
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 resource "aws_ssm_parameter" "atlantis_github_user_token" {
@@ -133,7 +133,7 @@ resource "aws_ssm_parameter" "atlantis_github_user_token" {
   type  = "SecureString"
   value = var.atlantis_github_user_token
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 resource "aws_ssm_parameter" "atlantis_gitlab_user_token" {
@@ -143,7 +143,7 @@ resource "aws_ssm_parameter" "atlantis_gitlab_user_token" {
   type  = "SecureString"
   value = var.atlantis_gitlab_user_token
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 resource "aws_ssm_parameter" "atlantis_bitbucket_user_token" {
@@ -153,7 +153,7 @@ resource "aws_ssm_parameter" "atlantis_bitbucket_user_token" {
   type  = "SecureString"
   value = var.atlantis_bitbucket_user_token
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 ###################
@@ -175,7 +175,7 @@ module "vpc" {
   enable_nat_gateway = true
   single_nat_gateway = true
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 ###################
@@ -233,7 +233,7 @@ module "alb" {
     },
   ]
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 # Forward action for certain CIDR blocks to bypass authentication (eg. GitHub webhooks)
@@ -268,7 +268,7 @@ module "alb_https_sg" {
 
   ingress_cidr_blocks = var.alb_ingress_cidr_blocks
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 module "alb_http_sg" {
@@ -281,7 +281,7 @@ module "alb_http_sg" {
 
   ingress_cidr_blocks = var.alb_ingress_cidr_blocks
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 module "atlantis_sg" {
@@ -304,7 +304,7 @@ module "atlantis_sg" {
 
   egress_rules = ["all-all"]
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 ###################
@@ -320,7 +320,7 @@ module "acm" {
 
   zone_id = var.certificate_arn == "" ? element(concat(data.aws_route53_zone.this.*.id, [""]), 0) : ""
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 ###################
@@ -349,7 +349,7 @@ module "ecs" {
 
   name = var.name
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 data "aws_iam_policy_document" "ecs_tasks" {
@@ -371,7 +371,7 @@ resource "aws_iam_role" "ecs_task_execution" {
   name               = "${var.name}-ecs_task_execution"
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks.json
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_execution" {
@@ -522,7 +522,7 @@ resource "aws_ecs_task_definition" "atlantis" {
 
   container_definitions = local.container_definitions
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 data "aws_ecs_task_definition" "atlantis" {
@@ -555,7 +555,7 @@ resource "aws_ecs_service" "atlantis" {
     target_group_arn = element(module.alb.target_group_arns, 0)
   }
 
-  tags = local.tags
+#  tags = local.tags
 }
 
 ###################
@@ -565,5 +565,5 @@ resource "aws_cloudwatch_log_group" "atlantis" {
   name              = var.name
   retention_in_days = var.cloudwatch_log_retention_in_days
 
-  tags = local.tags
+#  tags = local.tags
 }
